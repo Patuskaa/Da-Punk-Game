@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Base...</title>
+    <style>
+
+        #recursos {
+            display: none;
+        }
+
+        #tela {
+            display: block;
+            margin: auto;
+            margin-top: 2%;
+        }
+
+    </style>
+    <script src="Ludoteca.js"></script>
+    <script>
+        var tela;
+        var contexto;
+        var continua;
+        var contador;
+        var fundo;
+
+        var racioX;
+        var racioY;
+
+        var ratoX;
+        var ratoY;
+        
+        //imagens
+        var fundoEcraInicio;
+        var botaoJogar;
+        var botaoAjuda;
+        var botaoCreditos;
+        var cenarioVitoria;
+        var pontosGuardados;
+
+        //som
+        var fase5;
+
+
+        function inicia() {
+            tela = new Tela(document.getElementById("tela"));
+            contexto = tela.contexto;
+            continua = true;
+            contador = 0;
+            
+            //tela
+            fundoEcraInicio = new Rectangulo(0, 0, 1150, 640, "#051519");
+            //elementos
+            botaoJogar = new Imagem(900, 365, document.getElementById("botaoJogarInicio"));
+            botaoAjuda = new Imagem(900, 450, document.getElementById("botaoJogarAjuda"));
+            botaoCreditos = new Imagem(900, 530, document.getElementById("botaoCreditos"));
+            cenarioVitoria = new Imagem(0, 0, document.getElementById("cenarioVitoria"));
+           //sacar o local storage:
+           pontosGuardados = localStorage.getItem("pontos");
+           
+            pontos = new Texto(430, 560, "Pontuação: " + pontosGuardados, "#A0950A", "#A0950A",1);
+            pontos.tamanho = 35;
+            //som
+            fase5 = document.getElementById("fase5");
+
+            //...
+            ratoX = 0;
+            ratoY = 0;
+
+            racioX = tela.largura / tela.larguraFinal;
+            racioY = tela.altura / tela.alturaFinal;
+            //...
+            tela.elemento.onmousedown = processaBotaoPremido;
+            tela.elemento.onmouseup = processaBotaoLibertado;
+            tela.elemento.onmousemove = processaMovimento;
+        }
+
+        function desenha() {
+            fase5.play();
+            contexto.clearRect(0, 0, tela.largura, tela.altura);
+            fundoEcraInicio.desenha(tela);
+            cenarioVitoria.desenha(tela);
+            pontos.desenha(tela);
+
+            botaoJogar.desenha(tela);
+            botaoAjuda.desenha(tela);
+            botaoCreditos.desenha(tela);
+ 
+        
+            if (continua) {
+                contador++;
+                window.requestAnimationFrame(desenha);
+            }
+        }
+
+        function processaBotaoPremido(rato) {
+            ratoX = Math.floor(rato.offsetX * racioX);
+            ratoY = Math.floor(rato.offsetY * racioY);
+           
+            if (botaoJogar.contemPonto(ratoX, ratoY)) {
+                botaoJogar.seleccionado = true;
+                window.location.href = "daPunkJogo.html";
+                localStorage.clear();
+            }
+            if (botaoAjuda.contemPonto(ratoX, ratoY)) {
+                botaoAjuda.seleccionado = true;
+                window.location.href = "daPunkGameAjuda.html";
+                localStorage.clear();
+            }
+            if (botaoCreditos.contemPonto(ratoX, ratoY)) {
+                botaoCreditos.seleccionado = true;
+                window.location.href = "daPunkGameCreditos.html";
+                localStorage.clear();
+            }
+            
+        }
+
+        function processaMovimento(rato) {
+          
+            ratoX = Math.floor(rato.offsetX * racioX);
+            ratoY = Math.floor(rato.offsetY * racioY);
+
+            if (botaoJogar.contemPonto(ratoX, ratoY) || botaoAjuda.contemPonto(ratoX, ratoY) || botaoCreditos.contemPonto(ratoX, ratoY)) {
+                tela.elemento.style.cursor = "pointer";
+            } 
+            else{
+                tela.elemento.style.cursor = "default";
+            }
+        }
+
+        function processaBotaoLibertado(rato) {
+            ratoX = Math.floor(rato.offsetX * racioX);
+            ratoY = Math.floor(rato.offsetY * racioY);
+            //...
+        }
+
+        function processaTeclaPremida(tecla) {
+            if (tecla.keyCode == 32) {  // barra de espaços
+                //...
+            }
+            if (tecla.keyCode == 37) {  // esquerda
+                //...
+            }
+            if (tecla.keyCode == 38) {  // cima
+                //...
+            }
+            if (tecla.keyCode == 39) {  // direita
+                //...
+            }
+            if (tecla.keyCode == 40) {  // baixo
+                //...
+            }
+        }
+
+        function processaTeclaLibertada(tecla) {
+            if (tecla.keyCode == 32) {
+                //...
+            }
+            if ((tecla.keyCode == 37) || (tecla.keyCode == 39)) {
+                //...
+            }
+            if ((tecla.keyCode == 38) || (tecla.keyCode == 40)) {
+                //...
+            }
+        }
+
+        window.onload = function () {
+            inicia();
+            desenha();
+        }
+        window.onkeydown = processaTeclaPremida;
+        window.onkeyup = processaTeclaLibertada;
+    </script>
+</head>
+
+<body>
+    <canvas id="tela" width="1150" height="640">O seu <em>browser</em> não suporta o elemento
+        <code>canvas</code>!</canvas>
+    <div id="recursos">
+        <!--imagens-->
+ 
+
+        <img src="./recursos/imagens/botaoJogarInicio.png" id="botaoJogarInicio">
+        <img src="./recursos/imagens/botaoJogarAjuda.png" id="botaoJogarAjuda">
+        <img src="./recursos/imagens/botaoCreditos.png" id="botaoCreditos">
+        <img src="./recursos/imagens/cenarioVitoria.png" id="cenarioVitoria">
+        <!--sons-->
+        <audio src="./recursos/sons/Fase5.mp3" id="fase5">O seu <em>browser</em> não suporta o elemento <code> audio</code>!</audio>
+      
+    
+    </div>
+</body>
+
+</html>

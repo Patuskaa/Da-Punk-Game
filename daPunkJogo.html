@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>DA PUNK GAME</title>
+    <style>
+
+        #recursos {
+            display: none;
+        }
+
+        #tela {
+            display: block;
+            margin: auto;
+            margin-top: 2%;
+        }
+
+    </style>
+
+    <script src="Ludoteca.js"></script>
+
+    <script>
+        var tela;
+        var contexto;
+        var continua;
+        var contador;
+        var fundo;
+
+        var racioX;
+        var racioY;
+
+        var ratoX;
+        var ratoY;
+
+
+/*
+    ====================
+        VARIAVEIS  
+    ====================
+ */
+
+    //CENARIO
+        
+        var contadorCenario; //este refere-se ao "nível" em que estamos
+        var cenarios; //array dos cenários
+        var cenario1;
+        var cenario2;
+        var cenario3;
+        var cenario4;
+        var cenario5;
+        var cenario6;
+        var menuAjudaJogo;
+
+    
+    //PLATAFORMAS
+        var plataformas; //array das plataformas
+
+    //MOVIMENTOS
+        
+        var gravidadeGeral; //para atribuir a elementos do cenario
+        var gravidadeRobot; //para atribuir ao robot, porque esta vai variando
+        var gravidadeVilao;
+        var angulo;
+        
+        var velocidade;//deltaX do robot
+        var velocidadeInimigo; //deltaX dos inimigos
+        var velocidadeVilao3;
+        var velocidadeVilao4;
+        
+        
+        var vilao1Vida;
+        var vilao2Vida;
+        var vilao3Vida;
+        var vilao4Vida;
+
+
+    //PERSONAGEM
+        
+        var robot;
+        var robot2;
+        var robotEsqueleto;
+        var esqueletoCompensaX; // para o esqueleto ficar na posiçao da zona do corpo em si e não  do braço
+        
+        var inimigos; //array de inimigos
+        var vilaoEsqueleto;
+        
+        //CENÁRIO 2: 
+        var vilao1; //tem o radio
+        var cao;
+        var caoFeliz;
+        var radioPainel;
+
+        //CENÁRIO 3:
+        var stella;
+        var vilao2;
+
+        //CENÁRIO 4: 
+        var vilao3;
+        var vilao4;
+        
+    //ELEMENTOS
+        
+        //elementos no painel 
+        var pontuacao;
+        var pontos;
+        
+        var energia;
+        var indiceEnergia; //para mudar de indice no sprite
+        
+        var discoPainel;
+        var indiceDicosPainel; //para mudar o indice no sprite
+        
+        
+        var botaoMenu;
+        var botaoSomOff;
+        var botaoSomOn;
+
+        var botaoPlay;
+        var botaoSom;
+        var botaoMenu;
+        
+
+        //elementos no cenário 
+        var discosCorCenario;
+        var posicaoDisco; //vai aumentando o numero aquando o robot toca num disco
+        var discoCor;
+        var pilha;
+        var nave;
+        var prisao;
+        var chavePainel;
+
+        var tempoInicial;
+        var tempoActual;
+        var tempoEmFalta;
+        var tempoLimite;
+        var temporizador;
+        var temporizadorPainel;
+
+        var sim ;
+        var nao;
+      
+
+
+        //relativamente ao ROBOT 
+        var tiros; 
+        var direcaoTiro; //para incrementar positiva e negativamente o delta X
+        var compensacaoTiro; //paracompensar o ponto de nascimento do tiro
+
+
+        //relativamente aos Inimigos 
+        
+        var contadorInimigo; // inimigos mortos
+        var tirosInimigos; //tiros do inimigo 
+
+        //relativamente ao Vilão 
+        
+        var tirosVilao; //tiros do vilão
+        var tirosVilao3; //tiros do vilao 3
+        var tirosVilao4; //tiros do vilao 4
+        var tiroVilao4;
+        var tiroVilao3;
+        var coordenadas; //para o vilao preseguir o robot
+        var x;
+        var y;
+
+
+    
+    // SONS
+        var audios; //reune todos os audios
+
+        var faseSons; //array de sons de fundo para cada nível; 
+        var fase1;
+        var fase2;
+        var fase3;
+        var fase4;
+        var fase5;
+
+        var discoAudios; //array de sons quando o robot toca num disco no cenário
+        var harder; 
+        var better;
+        var faster;
+        var stronger;
+        
+
+        var somPilha; //quando apanha a pilha
+        var somPlataforma; //quando a plataforma de cima abre 
+        var somNave; //quando entra na nave 
+        
+        //relativamente ao robot
+        var somSalto; 
+        var somDisparo;
+        var somRobotAtingido; //quando tiro atinge o robot
+        var somRobotMorto; 
+
+        
+/*
+===============================================================================================
+                                        FUNÇÃO INICIA 
+===============================================================================================
+*/  
+
+    function inicia() {
+
+            tela = new Tela(document.getElementById("tela"));
+            contexto = tela.contexto;
+            continua = true;
+            contador = 0;
+          
+            
+
+              /*
+    ===============================
+         ATRIBUIÇÃO DE VARIAVEIS: 
+    ===============================
+    */  
+            
+            ratoX = 0;
+            ratoY = 0;
+
+            racioX = tela.largura / tela.larguraFinal;
+            racioY = tela.altura / tela.alturaFinal;
+            
+            tela.elemento.onmousedown = processaBotaoPremido;
+            tela.elemento.onmouseup = processaBotaoLibertado;
+            tela.elemento.onmousemove = processaMovimento;
+
+            //movimento: 
+            gravidadeGeral = 9.8;
+            gravidadeRobot = 9.8;
+            gravidadeVilao = 9.8;
+            angulo = 0;
+            velocidade = 3;
+            velocidadeInimigo = 2;
+            velocidadeVilao3 = 2;
+            velocidadeVilao4 = 2;
+            
+            //cenário
+            posicaoDisco = 0; // funciona como um contador, à medida que vamos apanhando este numero aumenta
+           
+            
+            x = 0;
+            y = 0;
+            
+            
+      
+            
+        /*
+    ===============================
+         CENÁRIOS: 
+    ===============================
+    */ 
+            
+            //========cenários
+            
+            contadorCenario = 0; //inicialmente o nível é  e mostra o cenário 1 - cenários[0]
+
+            cenario1 = new Imagem(0, 0, document.getElementById("cenario1"));
+            cenario2 = new Imagem(0, 0, document.getElementById("cenario2"));
+            cenario3 = new Imagem(0, 0, document.getElementById("cenario3"));
+            cenario4 = new Imagem(0, 0, document.getElementById("cenario4"));
+            cenario5 = new Imagem(0, 0, document.getElementById("cenario5"));
+            cenario6 = new Imagem(0, 0, document.getElementById("cenario6"));
+            menuAjudaJogo =  new Imagem(170, -25, document.getElementById("menuAjudaJogo"));
+            botaoFecharAjuda = new Imagem(750, 55, document.getElementById("botaoMenuAjuda"));
+            menuAjudaJogo.visivel = false;
+            botaoFecharAjuda.visivel = false;
+
+            cenarios = new Array;
+            cenarios.push(cenario1);
+            cenarios.push(cenario2);
+            cenarios.push(cenario3);
+            cenarios.push(cenario4);
+            cenarios.push(cenario5);
+            cenarios.push(cenario6);
+
+            sim = new Rectangulo( 588, 402, 38, 38, "#DDD205");
+            nao = new Rectangulo( 798, 402, 38, 38, "#DDD205");
+            sim.visivel = false;
+            nao.visivel = false;
+            
+
+   /*
+    ===============================
+         PLATAFORMAS: 
+    ===============================
+    */ 
+            //=========varias plataformas
+            plataforma1 = new Imagem(0, 0 , document.getElementById("plataformaCompleta"));
+            plataforma2 = new Imagem(0, 0 , document.getElementById("plataformaBloco"));
+            plataforma3 = new Imagem(0, 0 , document.getElementById("plataformaIntermedia1"));
+            plataforma4 = new Imagem(0, 0 , document.getElementById("plataformaIntermedia1"));
+            plataforma5 = new Imagem(0, 0 , document.getElementById("plataformaIntermedia2"));
+            plataforma6 = new Imagem(0, 0 , document.getElementById("plataformaBloco"));
+            plataforma7 = new Imagem(0, 0 , document.getElementById("plataformaBloco"));
+            plataforma8 = new Imagem(0, 0 , document.getElementById("plataformaIntermedia1"));
+            plataforma9 = new Imagem(0, 0 , document.getElementById("plataformaIntermedia1"));
+            plataforma10 = new Imagem(0, 0 , document.getElementById("plataformaIntermedia1"));
+            plataforma11 = new Imagem(0, 0 , document.getElementById("plataformaIntermedia1"));
+
+            //definir os pontos de desenho de cada plataforma (aproveitando as variaveis altura e largura da tela e das imagens)
+            plataforma1.y = tela.altura - plataforma1.altura;
+            plataforma1.x = -50;
+            plataforma2.x = tela.largura/2 - (plataforma2.largura/2); 
+            plataforma2.y = plataforma1.y -plataforma2.altura;
+            plataforma3.y = 480;
+            plataforma4.x = tela.largura - plataforma4.largura;
+            plataforma4.y = 480;
+            plataforma5.y = 320;
+            plataforma5.x = tela.largura/2 - plataforma5.largura/2;
+            plataforma6.y = plataforma3.y - plataforma6.altura;         
+            plataforma6.x = -50;
+            plataforma7.y = plataforma3.y - plataforma6.altura;         
+            plataforma7.x = tela.largura - 140;
+            plataforma8.x = 0;
+            plataforma8.y = 180;
+            plataforma9.x = plataforma8.largura -2;
+            plataforma9.y = 180;
+            plataforma10.x = plataforma8.largura*2 -4;
+            plataforma10.y = 180;
+            plataforma11.x = plataforma8.largura*3 -6;
+            plataforma11.y = 180;
+
+            //plataformas
+            plataformas = new Array;
+            //enviar para dentro da array
+            plataformas.push(plataforma1);
+            plataformas.push(plataforma2);
+            plataformas.push(plataforma3);
+            plataformas.push(plataforma4);
+            plataformas.push(plataforma5);
+            plataformas.push(plataforma6);
+            plataformas.push(plataforma7);
+            plataformas.push(plataforma8);
+            plataformas.push(plataforma9);
+            plataformas.push(plataforma10);
+            plataformas.push(plataforma11);
+
+     /*
+    ===============================
+         ELEMENTOS DO PAINEL:  
+    ===============================
+    */
+            //
+            botaoMenu = new Imagem(850, 20, document.getElementById("botaoMenu"));
+            
+            //discos no painel
+            discoPainel = new ImagemAnimada(400, 20, document.getElementById("discoPainel"), 5, 0);
+            indiceDicosPainel = 0; 
+            discoPainel.indice = 0;
+
+            //pontuação e pontos
+            pontos = 0;
+            pontuacao = new Texto(230, 25, "Pts: " + pontos, "01131E", "01131E", 2);
+            pontuacao.tamanho = 32;
+
+            //energia e pilhas
+            energia = new ImagemAnimada(30, 20, document.getElementById("energia"), 11, 0);
+            indiceEnergia = 3;
+
+            //
+            botaoPlay = new ImagemAnimada(975, 20, document.getElementById("botaoPlay"), 2, 0);
+            botaoPlay.indice = 0;
+            botaoSom = new ImagemAnimada(1030, 20, document.getElementById("botaoSom"), 2, 0);
+            botaoSom.indice = 0;
+            //chave painel
+            chavePainel = new ImagemAnimada(720, 23, document.getElementById('chavePainel'), 2, 0);
+            chavePainel.indice = 1;
+    
+            //radio painel
+            radioPainel = new ImagemAnimada(700, 10, document.getElementById('radioPainel'), 2, 0);
+            radioPainel.indice = 1;
+
+            //TEMPORIZADOR
+            temporizadorPainel =  new Imagem(700, 18, document.getElementById("temporizadorPainel"));
+
+
+            tempoInicial = 0;
+            tempoActual = Date.now()
+            tempoLimite = 60;   // 60 segundos, mas poderia ser qualquer outro valor mais adqueado
+            tempoEmFalta = tempoLimite - (tempoActual - tempoInicial); 
+            temporizador = new Texto(750, 40, tempoEmFalta, "#DDD205", "#DDD205", 2)
+            temporizador.tamanho = 30;
+ 
+
+    /*
+    ===============================
+         ELEMENTOS CENÁRIO: 
+    ===============================
+    */
+            //NAVE/////////////////////////////////////////////////////////////////////
+            nave = new ImagemAnimada(tela.largura/2 + 400, 100, document.getElementById("nave"), 3, 12);
+
+            //DISCOS CENÁRIO ///////////////////////////////////////////////////////////
+            discoCorCenario1 = new Imagem(400, 200, document.getElementById("discoCor"));
+            discoCorCenario2 = new Imagem(800, 300, document.getElementById("discoCor"));
+            discoCorCenario3 = new Imagem(100, 350, document.getElementById("discoCor"));
+            discoCorCenario4 = new Imagem(300, 350, document.getElementById("discoCor"));
+
+            discosCorCenario = new Array;
+            discosCorCenario.push(discoCorCenario1);
+            discosCorCenario.push(discoCorCenario2);
+            discosCorCenario.push(discoCorCenario3);
+            discosCorCenario.push(discoCorCenario4);
+
+            //gerar aleatorio no desenho no cenário
+            discosCorCenario[0].x = Math.random() * (tela.largura - discosCorCenario[0].largura);
+            discosCorCenario[1].x = Math.random() * (tela.largura - discosCorCenario[1].largura);
+            discosCorCenario[2].x = Math.random() * (tela.largura - discosCorCenario[2].largura);
+            discosCorCenario[3].x = Math.random() * (tela.largura - discosCorCenario[3].largura);
+
+            
+            //PILHA///////////////////////////////////////////////////////////////////////
+            pilha = new Imagem(300, 550, document.getElementById("pilha"));
+
+    /*
+    ===============================
+         PERSONAGENS 
+    ===============================
+    */
+
+            //ROBOT PRINCIPAL //////////
+
+            robot = new ImagemAnimada(0, 0, document.getElementById("robotSprite"),3, 0);
+
+            robotEsqueleto = new Rectangulo(200, 300, 13, 85, "red");
+            esqueletoCompensaX = -13;
+            robot.manipulaAltura = 0.5; //queremos que a altura seja apenas a metadade paracompensar o sprite
+
+            //ROBOT SECUNDARIO /////
+            robot2 = new ImagemAnimada(1000, 92, document.getElementById("robot2"),3, 0); 
+            robot2.manipulaAltura = 0.5; 
+            robot2.crop = 0;
+
+            //tiros
+            tiros = new Array();
+            direcaoTiro = 5;
+            compensacaoTiro =  70;
+
+            //INIMIGOS /////////////////
+
+            inimigos = new Array;
+            
+            // desenha 5 inimigos 
+            for(var i = 0 ; i <= 4; i++){           
+                var inimigo = new ImagemAnimada(0, 0, document.getElementById("inimigo"), 3 , 12);
+                inimigo.manipulaAltura = 0.5; 
+                inimigo.deltaY = gravidadeGeral;
+                inimigos.push(inimigo);
+            }
+
+            //inimigo.x =  Math.random() * (tela.largura - inimigo.largura)
+            //inimigo.y = 200; // desenhar abaixo da plataforma 11 mas acima da plataforma 1
+            inimigos[0].x = 800;
+            inimigos[1].x = 200;
+            inimigos[2].x = 300;
+            inimigos[3].x = 500;
+            inimigos[4].x = 800;
+            inimigos[0].y = 200;
+            inimigos[1].y = 200;
+            inimigos[2].y = 300;
+            inimigos[3].y = 400;
+            inimigos[4].y = 500;
+            inimigos[0].deltaX = velocidadeInimigo;
+            inimigos[0].crop = 0;
+            inimigos[1].deltaX = velocidadeInimigo * -1;
+            inimigos[1].crop = 1;
+            inimigos[2].deltaX = velocidadeInimigo;
+            inimigos[2].crop = 0;
+            inimigos[3].deltaX = velocidadeInimigo * -1 ;
+            inimigos[3].crop = 1;
+            inimigos[4].deltaX = velocidadeInimigo;
+            inimigos[4].crop = 0;
+
+            //variavel que conta a quantidade de inimigos mortos
+            contadorInimigo = 0;
+
+            //tirosInimigos
+            tirosInimigos = new Array();
+
+            //VILÃO ///////////////////
+            
+            vilaoEsqueleto = new Rectangulo(10, 10, 65, 100, "red");
+            vilaoEsqueleto.deltaY = gravidadeVilao;
+            tirosVilao = new Array;
+            tirosVilao3 = new Array;
+            tirosVilao4 = new Array;
+
+                //// Cenário 2
+            vilao1 = new ImagemAnimada(30,10, document.getElementById("vilao1"), 3, 10);
+            vilao1.manipulaAltura = 0.5; //cortar a altura pela metade
+            vilao1Vida = 2;
+            
+
+                ////Cenário 3
+            stella = new ImagemAnimada(200,  80, document.getElementById('stella'), 2, 10);
+            prisao =  new Imagem(180, 60, document.getElementById("prisao"));
+
+            vilao2 = new ImagemAnimada(30, 10, document.getElementById("vilao2"), 3, 10);
+            vilao2.manipulaAltura = 0.5; //cortar a altura pela metade
+            vilao2Vida = 4;
+                ////Cenário 4
+            vilao3 = new ImagemAnimada(750, 370, document.getElementById("vilao3"), 3, 10);
+            vilao3.manipulaAltura = 0.5; 
+            vilao3.deltaX = velocidadeVilao3;
+            vilao3Vida = 8;
+            vilao3.activo = false;
+            
+
+            vilao4 = new ImagemAnimada(200, 210, document.getElementById("vilao4"), 3, 10);
+            vilao4.manipulaAltura = 0.5; 
+            vilao4Vida = 8;
+            vilao4.deltaX = velocidadeVilao4;
+            vilao4.activo =false;
+            
+            //PERSONAGENS DE ACORDO COM CENÁRIO ///////////////////////////
+
+                ///Cenário 2
+                cao = new ImagemAnimada(200,  235, document.getElementById('cao'), 3, 10);
+                caoFeliz = new ImagemAnimada(200,  235, document.getElementById('caoFeliz'), 3, 10);
+
+                ///Cenário 3
+
+                ///Cenário 4
+            
+    /*
+    ===============================
+         SONS 
+    ===============================
+    */
+            //SONS DE FUNDO 
+            fase1 = document.getElementById("fase1");
+            fase2 = document.getElementById("fase2");
+            fase3 = document.getElementById("fase3");
+            fase4 = document.getElementById("fase4");
+            fase5 = document.getElementById("fase5");
+            
+            faseSons = new Array;
+            faseSons.push(fase1);
+            faseSons.push(fase2);
+            faseSons.push(fase3);
+            faseSons.push(fase4);
+            faseSons.push(fase5);
+
+            for(var i = 0; i < faseSons.length; i++){
+                faseSons[i].onended = playSons;
+            }
+
+            // SONS DOS DISCOS 
+            
+            harder = new Som(document.getElementById("harder"));
+            better = new Som(document.getElementById("better"));
+            faster = new Som(document.getElementById("faster"));
+            stronger = new Som(document.getElementById("stronger"));
+            
+            discoAudios = new Array;
+            discoAudios.push(harder);
+            discoAudios.push(better);
+            discoAudios.push(faster);
+            discoAudios.push(stronger);
+
+            //SONS PILHA 
+            somPilha = new Som(document.getElementById("somPilha"));
+            //SOM PLATAFORMA ABRIR
+            somPlataforma = new Som(document.getElementById("aberturaPlataforma"));
+            //SOM NAVE 
+            somNave = new Som(document.getElementById("somNave"));
+            
+            //SOM DO ROBOT///////////////////////////
+            somSalto = new Som(document.getElementById("salto"));
+            somSalto.volume= 0.65;
+            somDisparo = new Som(document.getElementById("disparoRobot"));
+            somRobotAtingido = new Som(document.getElementById("robotAtingido"));
+            somRobotMorto = new Som(document.getElementById("robotMorto"));
+
+            audios = document.getElementsByTagName("audio");
+           
+    }
+
+/*
+=====================================================================================
+                                    FUNÇÃO DESENHA
+=====================================================================================
+*/  
+
+        function desenha() {
+            
+            contexto.clearRect(0, 0, tela.largura, tela.altura);
+         
+            
+     /*
+    ===============================
+         CENÁRIOS: 
+    ===============================
+    */ 
+            
+           cenarios[contadorCenario].desenha(tela);
+         
+
+            
+
+     /*
+    ===============================
+         PLATAFORMAS + COLISÕES  
+    ===============================
+    */
+    for(var i = 0; i < plataformas.length ; i++){
+                
+            /////DESENHA PLATAFORMAS//////////
+                plataformas[i].desenha(tela);
+
+                /////COLISÕES ROBOT////
+
+                if(robotEsqueleto.colide(plataformas[i])){
+                    
+                    // em cima 
+                    if (robotEsqueleto.y + robotEsqueleto.altura - Math.abs(robotEsqueleto.deltaY) <= plataformas[i].y ) {
+                        robotEsqueleto.y = plataformas[i].y - robotEsqueleto.altura;    
+                    }
+                    // à esquerda
+                   else if (robotEsqueleto.x + robotEsqueleto.largura  - velocidade <= plataformas[i].x) {
+                       robotEsqueleto.x = plataformas[i].x - robotEsqueleto.largura - 1;
+                    }
+                    // à direita
+                    else if (robotEsqueleto.x - plataformas[i].largura + velocidade >= plataformas[i].x) {
+                        robotEsqueleto.x = plataformas[i].x + plataformas[i].largura + 1;
+                    }
+                    // em baixo
+                    else if (robotEsqueleto.y - plataformas[i].altura + Math.abs(robotEsqueleto.deltaY) >= plataformas[i].y) {
+                        robotEsqueleto.y = plataformas[i].y + plataformas[i].altura + 1;
+                        angulo = 0;
+                    }                   
+                }
+
+                /////COLISÕES VILAO////
+                
+                if(vilaoEsqueleto.colide(plataformas[i])){
+                    // em cima 
+                    if (vilaoEsqueleto.y + vilaoEsqueleto.altura - Math.abs(vilaoEsqueleto.deltaY) <= plataformas[i].y ) {
+                        vilaoEsqueleto.y = plataformas[i].y - vilaoEsqueleto.altura;
+                        
+                    }
+                    // à esquerda
+                   else if (vilaoEsqueleto.x + vilaoEsqueleto.largura  - velocidade <= plataformas[i].x) {
+                        vilaoEsqueleto.x = plataformas[i].x - vilaoEsqueleto.largura - 1;
+                    }
+                    // à direita
+                    else if (vilaoEsqueleto.x - plataformas[i].largura + velocidade >= plataformas[i].x) {
+                        vilaoEsqueleto.x = plataformas[i].x + plataformas[i].largura + 1;
+                    }
+                    // em baixo
+                    else if (vilaoEsqueleto.y - plataformas[i].altura + Math.abs(vilaoEsqueleto.deltaY) >= plataformas[i].y) {
+                        vilaoEsqueleto.y = plataformas[i].y + plataformas[i].altura + 1;
+                        angulo = 0;
+                    }                   
+                }
+                //COLISÃO DOS INIMIGOS >> quando os inimigos são desenhados
+            
+            }
+    /*
+    ===============================
+        ELEMENTOS NO PAINEL  
+    ===============================
+    */
+
+            //desenhar discos no painel
+            discoPainel.desenha(tela);
+            discoPainel.indice  = indiceDicosPainel;
+
+            //desenhar botao do menu
+            botaoMenu.desenha(tela);
+
+            //desenhar energia do painel
+            energia.desenha(tela);
+            energia.indice = indiceEnergia;
+
+            //desenhar pontos do painel
+            pontuacao.texto = "Pts: " + pontos;
+            pontuacao.desenha(tela);
+
+           //TEMPORIZADOR 
+           //tempo inicial = o na funçao inicia
+           //if(tempo inicial == 0){
+             //tempo inicial = Date.now();  
+          // }
+           if(contadorCenario == 3){
+               if(tempoInicial == 0){
+                    tempoInicial = Date.now();
+               }
+                temporizadorPainel.desenha(tela);
+                tempoActual = Date.now();
+                tempoEmFalta = tempoLimite - Math.floor((tempoActual - tempoInicial) / 1000);
+                temporizador.texto = tempoEmFalta;
+                temporizador.desenha(tela);
+            }
+
+        //botao Play
+        botaoPlay.desenha(tela);
+        
+
+        //botao Som
+        botaoSom.desenha(tela);
+    /*
+    ===============================
+        ELEMENTOS NO CENÁRIO
+    ===============================
+    */
+            //sim a não
+            sim.desenha(tela);
+            nao.desenha(tela);
+           
+
+            //desenhar nave
+            nave.desenha(tela);
+
+            //cenario 0 paris
+
+             if(robotEsqueleto.colide(nave) && contadorCenario == 0){
+
+                faseSons[contadorCenario].pause(); //parar a musica que está a tocar
+                somNave.reproduz(true);
+                indiceDicosPainel = 0;
+                posicaoDisco = 0;  
+                contadorCenario =1; 
+                robotEsqueleto.x = 200;  
+                robotEsqueleto.y = 500; 
+                plataformas[8].visivel = true; 
+                plataformas[8].activo = true; 
+                
+                for(i =  0; i < discosCorCenario.length ; i++){
+                    discosCorCenario[i].visivel = true; 
+                    discosCorCenario[i].activo = true;                  
+                }
+                playSons(); //chamar a funçao para tocar a musica da nova fase   
+            }
+
+
+            //cenario 1  NOVA YORK colide com nave e vilao1 morto: 
+
+            if(robotEsqueleto.colide(nave) && contadorCenario == 1 && vilao1Vida <= 0){
+                faseSons[contadorCenario].pause(); //parar a musica que está a tocar
+                somNave.reproduz(true);
+                indiceDicosPainel = 0;
+                posicaoDisco = 0;  
+                contadorCenario = 2; 
+                robotEsqueleto.x = 200;  
+                robotEsqueleto.y = 500; 
+                plataformas[8].visivel = true; 
+                plataformas[8].activo = true; 
+                inimigos[0].x = 800;
+                inimigos[1].x = 200;
+                inimigos[2].x = 300;
+                inimigos[3].x = 500;
+                inimigos[4].x = 800;
+                inimigos[0].y = 200;
+                inimigos[1].y = 200;
+                inimigos[2].y = 300;
+                inimigos[3].y = 400;
+                inimigos[4].y = 500;
+
+                for (j = 0; j < inimigos.length; j++) {
+                    
+                    inimigos[j].visivel = true;
+                    inimigos[j].activo = true;
+                    inimigos[j].deltaY = 9.8;
+                }
+                for(i =  0; i < discosCorCenario.length ; i++){
+                    discosCorCenario[i].visivel = true; 
+                    discosCorCenario[i].activo = true;                
+                }
+                caoFeliz.visivel = false;
+                caoFeliz.activo = false;
+                
+                playSons(); //chamar a funçao para tocar a musica da nova fase   
+            }
+
+            //cenario 2 PIRAMIDE colide com nave e vilao1 morto: 
+
+            if(robotEsqueleto.colide(nave) && contadorCenario == 2 && vilao2Vida <= 0){
+                pilha.visivel = true;
+                pilha.activo = true;
+                faseSons[contadorCenario].pause(); //parar a musica que está a tocar
+                somNave.reproduz(true);
+                indiceDicosPainel = 0;
+                posicaoDisco = 0;  
+                contadorCenario = 3; 
+                robotEsqueleto.x = 200;  
+                robotEsqueleto.y = 500; 
+                plataformas[8].visivel = true; 
+                plataformas[8].activo = true; 
+                inimigos[0].x = 800;
+                inimigos[1].x = 200;
+                inimigos[2].x = 300;
+                inimigos[3].x = 500;
+                inimigos[4].x = 800;
+                inimigos[0].y = 200;
+                inimigos[1].y = 200;
+                inimigos[2].y = 300;
+                inimigos[3].y = 400;
+                inimigos[4].y = 500;
+
+                for (j = 0; j < inimigos.length; j++) {
+                    
+                    inimigos[j].visivel = true;
+                    inimigos[j].activo = true;
+                    inimigos[j].deltaY = 9.8;
+                }
+                for(i =  0; i < discosCorCenario.length ; i++){
+                    discosCorCenario[i].visivel = true; 
+                    discosCorCenario[i].activo = true;                
+                }
+                stella.visivel = false;
+                chavePainel.visivel = false;
+                
+                playSons(); //chamar a funçao para tocar a musica da nova fase   
+            }
+
+           // cenario 3 deserto
+           if(robotEsqueleto.colide(nave) && contadorCenario == 3 && vilao3Vida <= 0 && vilao4Vida <= 0){
+               for(i = 0; i < plataformas.length ; i++){
+                   plataformas[i].visivel = false;
+                   plataformas[i].activo = false;
+               }
+               contadorCenario = 4;
+               localStorage.setItem("pontos", pontos);
+
+           }
+           
+            
+
+            ////////////////////////////////////////////////////////////////////////
+
+            //desnhar pilha 
+            pilha.desenha(tela);
+
+            //INTERAÇÃO com pilha
+
+            if( indiceEnergia <= 0){
+                    indiceEnergia = 0; 
+            }
+
+
+            if(robotEsqueleto.colide(pilha)){
+                if (indiceEnergia == 0){
+                    pontos += 100; 
+                    indiceEnergia =0; 
+                }
+                pilha.visivel = false;
+                pilha.activo = false;
+                indiceEnergia =  energia.indice - 3; 
+                somPilha.reproduz(true);
+                //quando o indice chega a 10 o robot morre
+            }
+
+
+            
+
+            
+
+            
+
+            ////////////////////////////////////////////////////////////////////////
+
+            //desenhar discos no Cenário + COLISÕES + GRAVIDADE
+            for(var i = 0; i< discosCorCenario.length; i++){ 
+                    
+                discosCorCenario[i].deltaY = gravidadeGeral; //dar gravidade aos discos 
+                for(var l = 0; l < plataformas.length; l++){ // testar colisoes com as plataformas do cenário para poder desenhar aleatoriamente
+                     if(discosCorCenario[i].colide(plataformas[l])){
+                       if (discosCorCenario[i].y + discosCorCenario[i].altura - Math.abs(discosCorCenario[i].deltaY) <= plataformas[l].y ) {
+                            discosCorCenario[i].y = plataformas[l].y- discosCorCenario[i].altura ;    
+                        }
+                    }
+                }
+            }
+                    
+            // INTERAÇÃO com os discos: 
+            if(posicaoDisco<4){
+                discosCorCenario[posicaoDisco].desenha(tela); //desenhar discos
+                if(discosCorCenario[posicaoDisco].colide(robotEsqueleto)){ //ver se o robot apanha um disco
+                   discosCorCenario[posicaoDisco].visivel = false;
+                   discosCorCenario[posicaoDisco].activo = false;
+                   discoAudios[posicaoDisco].reproduz(true);  // som a tocar 
+                   indiceDicosPainel = indiceDicosPainel + 1;
+                   pontos += 200;
+                   posicaoDisco +=1;
+                }
+            }
+
+            //ABERTURA DA PLATAFORMA
+            
+            //quando os 4 discos sao apanhados vamos abrir a plataforma
+            // que significa que a variavel indice tem o velor de 4
+
+            if(indiceDicosPainel == 4 && contadorCenario == 0){
+             plataformas[8].visivel = false;
+             plataformas[8].activo = false;
+             //somPlataforma.reproduz();   
+            } 
+
+
+            //abrir as platadformas no nivel dois
+            if(indiceDicosPainel == 4 && contadorCenario == 1 && contadorInimigo == 5){
+             plataformas[8].visivel = false;
+             plataformas[8].activo = false;
+             //somPlataforma.reproduz();   
+            }
+
+            //abrir plataformas nivel três
+            if(indiceDicosPainel == 4 && contadorCenario == 2 && contadorInimigo == 10){
+             plataformas[8].visivel = false;
+             plataformas[8].activo = false;
+             //somPlataforma.reproduz();   
+            }
+
+            //abrir plataforma quatro cenario deserto
+            if(indiceDicosPainel == 4 && contadorCenario == 3 && contadorInimigo == 15 && vilao4Vida <= 0 && vilao3Vida <=0){
+             plataformas[8].visivel = false;
+             plataformas[8].activo = false;
+             //somPlataforma.reproduz();   
+            }
+
+    
+    /*
+    ===============================
+        ROBOT 
+    ===============================
+    */
+            //robot
+            robot.x = robotEsqueleto.x + esqueletoCompensaX;
+            robot.y = robotEsqueleto.y;
+            robotEsqueleto.visivel = false;
+            robot.desenha(tela);
+            robotEsqueleto.desenha(tela);
+
+            //MOVIMENTOS DO ROBOT 
+            //salto do robot
+            robotEsqueleto.deltaY = gravidadeRobot * Math.cos(angulo * Math.PI / 180) ; //adicionar gravidade ao elemento
+            
+            //ignorar a gravidade fora do canvas
+            //para que ele possa passar de um lado para o outro
+            if(robot.x + robotEsqueleto.largura >tela.largura){
+                gravidadeRobot = 0 ;
+            }
+            else if(robotEsqueleto.x < 0){
+                gravidadeRobot = 0;
+            } else{
+                gravidadeRobot = 9.8; // *********************ESQUELETO GRAVIDADE
+            }
+            if(robotEsqueleto.x >= tela.largura){ // se deparecer em largura aprece no outro lado
+               robotEsqueleto.x = 0;  
+            }
+            if(robotEsqueleto.x + robotEsqueleto.largura <= 0) { // se deparecer em 0 aprece no outro lado
+                robotEsqueleto.x = tela.largura;
+            }
+            //amplitude do SALTO
+            angulo-=4;
+            if(angulo < 0){
+                angulo = 0 ;
+            }
+
+            //TIROS DO ROBOT 
+            for (var i = 0; i < tiros.length; i++) {
+                tiros[i].desenha(tela);
+
+                // eliminar os tiros que ultrapassam o limite direito do canvas (retirá-los do array)
+                if (tiros[i].x > tela.largura || tiros[i].x < 0) {
+                   tiros.splice(i, 1);
+                   i--;
+                   continue;
+                }
+                
+                //MATAR VILAO 1
+                if(tiros[i].colide(vilaoEsqueleto)){
+                    pontos += 40;
+                    vilao1Vida -=1;
+                    vilao2Vida -=1;
+                  //  vilao3Vida -=1;
+                  //  vilao4Vida -=1;
+                    tiros.splice(i, 1);
+                    i--;
+                    continue;
+
+                    
+                }
+
+                if(tiros[i].colide(vilao3)){
+                    pontos += 40;
+                    vilao3Vida -=1;  
+                    tiros.splice(i, 1);
+                    i--;
+                    continue;     
+                }
+
+                if(tiros[i].colide(vilao4)){
+                    pontos += 40;
+                    vilao4Vida -=1; 
+                    tiros.splice(i, 1);
+                    i--;
+                    continue;      
+                }
+
+                
+
+                //MATAR INIMIGOS
+                for (var j = 0; j < inimigos.length; j++) {
+                    //colidir com inimigos 
+                    if (tiros[i].colide(inimigos[j])) {
+                        inimigos[j].visivel = false;
+                        inimigos[j].activo = false;
+                       // inimigos[j].deltaY = 0;
+                        pontos += 10;
+                        contadorInimigo += 1;
+                        // o facto deste splice estar dentro de uma ciclo que nao é o ciclo original do metodo impede-o de funcionar
+                        tiros.splice(i, 1);
+                        i--;
+                        break;
+                    }
+                }
+            }
+
+
+
+       /*
+    ===============================
+        ROBOT 
+    ===============================
+    */
+   
+   if (contadorCenario == 3){
+        robot2.desenha(tela);  
+        for(var i  = 0; i< plataformas.length; i++){
+            if(robotEsqueleto.colide(plataformas[10])){
+                robot2.x = robotEsqueleto.x; 
+            }
+        }           
+   }
+    
+    /*
+    ===============================
+        INIMIGOS 
+    ===============================
+    */
+            
+             for(var i = 0; i<=4; i++){
+              if (contadorCenario >=1 && contadorCenario <= 3){ // desenha se o nivel for maior que 2 e menor que o 4
+                    inimigos[i].desenha(tela);
+               }
+                    
+                //INIMIGOS nao podem sair da tela
+                    if(inimigos[i].x < 0){ 
+                        inimigos[i].deltaX = velocidadeInimigo;
+                        inimigos[i].crop = 0;
+                    }
+
+                   if(inimigos[i].x + inimigos[i].largura> tela.largura){
+                        inimigos[i].deltaX = velocidadeInimigo *-1;
+                        inimigos[i].crop = 1;
+                    }
+            }
+
+
+                //COLISÃO dos inimigos 
+                for (var i = 0; i< inimigos.length ; i++){
+                //1. percorrer a array das plataformas
+                for(var j = 0; j < plataformas.length ; j++){
+                    
+                    //2. testar colisões dos inimigos com as plataformas 
+                    if(inimigos[i].colide(plataformas[j])){
+                            // em cima 
+                            if (inimigos[i].y + inimigos[i].altura - Math.abs(inimigos[i].deltaY) <= plataformas[j].y ) {
+                                inimigos[i].y = plataformas[j].y - inimigos[i].altura; // original -impede que caia da plataforma
+                                if(inimigos[i].x <= plataformas[j].x){ 
+                                    inimigos[i].deltaX =  velocidadeInimigo;
+                                    inimigos[i].crop = 0;
+                                }
+                                if(inimigos[i].x + inimigos[i].largura >= plataformas[j].x + plataformas[j].largura){ 
+                                   inimigos[i].deltaX = velocidadeInimigo *-1;
+                                    inimigos[i].crop = 1;
+                                }    
+                            }
+                            // à esquerda da plataforma*************** não está feito
+                            else if (inimigos[i].x + inimigos[i].largura  - velocidadeInimigo <= plataformas[j].x) {
+                                    //inimigos[i].x = plataformas[j].x - inimigos[i].largura - 1;
+                                   // inimigos[i].crop = 0;
+                            }
+                            // à direita da plataforma
+                            else if (inimigos[i].x - plataformas[j].largura + velocidadeInimigo >= plataformas[j].x) {
+                               // inimigos[i].x = plataformas[j].x + plataformas[j].largura + 1;
+                                inimigos[i].deltaX = velocidadeInimigo;
+                                inimigos[i].crop = 0;
+                            }
+                            // em baixo
+                            else if (inimigos[i].y - plataformas[j].altura + Math.abs(inimigos[i].deltaY) >= plataformas[j].y) {
+                                inimigos[i].y = plataformas[j].y + plataformas[j].altura + 1;
+                                angulo = 0;
+                            }                   
+                    }
+
+                }
+             }
+
+            
+
+            // TIROS DOS INIMIGOS 
+
+            //1. percorre a array dos inimigos: 
+            if (contadorCenario >= 1 ){
+            for(var i = 0; i < inimigos.length; i++){
+                
+                //2. define os tiros e empurra para a array
+                    
+                //3.define uma probabilidade de os inimigos atirar
+                    if((Math.abs(robotEsqueleto.y - inimigos[i].y) <100) && (Math.random() < 0.0030)){
+                        var tiroInimigo = new Rectangulo(0, 0, 6, 6);
+                        tiroInimigo.x = inimigos[i].x + inimigos[i].largura;
+                        tiroInimigo.y = inimigos[i].y + 32;
+                        if(inimigos[i].deltaX==2){
+                            tiroInimigo.deltaX = 3;
+                        }
+                        if(inimigos[i].deltaX== -2){
+                            tiroInimigo.deltaX = -3;
+                        }
+                        
+                        tirosInimigos.push(tiroInimigo);
+                    }               
+            }
+
+            //VERIFICA SE OS TIROS COLIDEM COM O ROBOT
+           
+            for(var j = 0; j < tirosInimigos.length; j++){
+                tirosInimigos[j].desenha(tela);
+                if(tirosInimigos[j].colide(robotEsqueleto)){
+                    indiceEnergia =  energia.indice + 1; 
+                    somRobotAtingido.reproduz(true);
+                   tirosInimigos.splice(j, 1);
+                }
+            } 
+
+            
+            for(var i =  0; i < tirosInimigos.length; i++){
+                if (tirosInimigos[i].x > tela.largura || tirosInimigos[i].x < 0){ 
+                    tirosInimigos.splice(i, 1);
+                    i--;
+                    continue;
+               }
+            }
+        }
+
+
+    /*
+    ===============================
+        VILÃO
+    ===============================
+    */
+            if (contadorCenario >= 1 && contadorCenario < 3){
+            //vilao esqueleto
+            vilaoEsqueleto.desenha(tela);
+            }
+            
+            //vilao  1
+            if(contadorCenario == 1){
+                vilao1.desenha(tela);
+                vilao1.x = vilaoEsqueleto.x;
+                vilao1.y = vilaoEsqueleto.y - 20; 
+            }
+
+
+            //Vilão ignorar a gravidade fora do canvas
+            //para que ele possa passar de um lado para o outro
+            if(vilaoEsqueleto.x >= tela.largura){
+                gravidadeVilao = 0;
+            }
+            else if(vilaoEsqueleto.x <= 0){
+                gravidadeVilao = 0;
+            } else{
+                gravidadeVilao = 9.8; // *********************ESQUELETO GRAVIDADE
+            }
+            if(vilaoEsqueleto.x >= tela.largura){ // se deparecer em largura aprece no outro lado
+                vilaoEsqueleto.x = 0;  
+            }
+            if(vilaoEsqueleto.x + vilaoEsqueleto.largura <= 0) { // se deparecer em 0 aprece no outro lado
+                vilaoEsqueleto.x = tela.largura;
+            }
+
+            //MORTE VILAO 1
+            if(vilao1Vida <= 0){
+                vilao1.visivel = false;
+                vilao1.activo = false;
+                vilaoEsqueleto.visivel = false;
+                vilaoEsqueleto.activo = false;
+                // vilaoEsqueleto.x = - 100;
+                vilaoEsqueleto.y = - 100;
+                cao.visivel = false;
+                cao.activo = false;
+                caoFeliz.desenha(tela);
+                radioPainel.indice = 0;
+            }
+
+              //MORTE VILAO 2
+              if(vilao2Vida <= 0 ){
+                vilao1Vida = 0;  
+                vilao2.visivel = false;
+                vilao2.activo = false;
+                vilaoEsqueleto.visivel = false;
+                vilaoEsqueleto.activo = false;
+                vilaoEsqueleto.y = - 100;
+               // vilaoEsqueleto.y = 10;
+               // vilaoEsqueleto.x = 100;
+                prisao.visivel = false;
+                chavePainel.indice = 0;
+
+            }
+
+            vilaoEsqueleto.visivel = false;
+
+            //vilao 2 
+            
+            if(contadorCenario == 2){
+                vilao2.desenha(tela);
+                vilao1Vida = 2; //para ter o esqueleto ativo outra vez 
+                
+                vilao2.x = vilaoEsqueleto.x;
+                vilao2.y = vilaoEsqueleto.y - 20; 
+               
+                vilaoEsqueleto.deltaY = gravidadeVilao;
+                vilaoEsqueleto.visivel = false;
+                vilaoEsqueleto.activo = true;
+                
+
+           }
+
+
+            //vilao 3
+
+            if(contadorCenario == 3){
+                vilao3.desenha(tela);
+                vilao3.activo = true;
+                
+                //movimento do vilao 
+                if(vilao3.x == 950){
+                vilao3.deltaX = velocidadeVilao3 * -1;
+                vilao3.crop = 1;
+                }
+                if(vilao3.x == 750){
+                vilao3.deltaX = velocidadeVilao3;
+                    vilao3.crop = 0;
+                }
+
+                //construção dos tiros do vilao 
+                if(Math.random() < 0.030){
+                        var tiroVilao3 = new Rectangulo(0, 0, 6, 6);
+                        tiroVilao3.x = vilao3.x + 30;
+                        tiroVilao3.y = vilao3.y + 44;
+                        if(vilao3.crop == 0){
+                            tiroVilao3.deltaX = 3;
+                        }
+                        if(vilao3.crop == 1){
+                            tiroVilao3.deltaX = -3;
+                        }
+                            
+                        tirosVilao3.push(tiroVilao3);
+                }
+
+                //desnehos dos tiros do vilao
+                if(vilao3Vida >   0){ //so desenha tiros se o vilao estiver vivo 
+                        for(var x = 0; x < tirosVilao3.length; x++){
+                            tirosVilao3[x].desenha(tela);
+                            
+                            if (tirosVilao3[x].x > tela.largura || tirosVilao3[x].x < 0) {
+                                tirosVilao3.splice(x, 1);
+                                x--;
+                                continue;
+                            }
+
+                            if(tirosVilao3[x].colide(robotEsqueleto)){
+                                indiceEnergia = energia.indice + 2;
+                                somRobotAtingido.reproduz(true);
+                                tirosVilao3.splice(x, 1);
+                            }  
+                        }
+                }
+
+            }
+
+             //MORTE VILAO 3
+             if(vilao3Vida <= 0){
+                vilao3.visivel = false;
+                vilao3.activo = false;
+            }
+
+            
+
+            //vilao 4 
+           
+
+          if(contadorCenario == 3){
+                vilao4.desenha(tela);
+                vilao4.activo = true;
+                //movimento do vilao 
+                if(vilao4.x == 800){
+                vilao4.deltaX = velocidadeVilao4 * -1;
+                vilao4.crop = 1;
+                }
+                if(vilao4.x == 260){
+                vilao4.deltaX = velocidadeVilao4;
+                    vilao4.crop = 0;
+                }
+
+                //construção dos tiros do vilao 
+                if(Math.random() < 0.030){
+                        var tiroVilao4 = new Rectangulo(0, 0, 6, 6);
+                        tiroVilao4.x = vilao4.x + 30;
+                        tiroVilao4.y = vilao4.y + 44;
+                        if(vilao4.crop == 0){
+                            tiroVilao4.deltaX = 3;
+                        }
+                        if(vilao4.crop == 1){
+                            tiroVilao4.deltaX = -3;
+                        }
+                            
+                        tirosVilao4.push(tiroVilao4);
+                }
+
+                //desenhos dos tiros do vilao
+                if(vilao4Vida >   0){ //so desenha tiros se o vilao estiver vivo 
+                        for(var x = 0; x < tirosVilao4.length; x++){
+                            tirosVilao4[x].desenha(tela);
+                            
+                            if (tirosVilao4[x].x > tela.largura || tirosVilao4[x].x < 0) {
+                                tirosVilao4.splice(x, 1);
+                                x--;
+                                continue;
+                            }
+
+                            if(tirosVilao4[x].colide(robotEsqueleto)){
+                                indiceEnergia = energia.indice + 2;
+                                somRobotAtingido.reproduz(true);
+                                tirosVilao4.splice(x, 1);
+                            }  
+                        }
+                }
+
+            }
+
+             //MORTE VILAO 4
+             if(vilao4Vida <= 0){
+                vilao4.visivel = false;
+                vilao4.activo = false;
+            }
+
+
+
+
+          
+            //PERSEGUIÇÃO DO VILÃO ----> ROBOT 
+            coordenadas = new Array;
+            var delta = 3;
+            
+            coordenadas.push({ x: vilaoEsqueleto.x, y: vilaoEsqueleto.y});
+            coordenadas.push({ x: vilaoEsqueleto.x + delta, y: vilaoEsqueleto.y}); //direita
+            coordenadas.push({ x: vilaoEsqueleto.x - delta, y: vilaoEsqueleto.y}); //esquerda
+
+            var distanciaMenor = calculaDistancia(vilaoEsqueleto.x, robotEsqueleto.x, vilaoEsqueleto.y , robotEsqueleto.y);
+            for (var i = 0; i < coordenadas.length; i++) {
+                
+                if (calculaDistancia(coordenadas[i].x, robotEsqueleto.x, coordenadas[i].y, robotEsqueleto.y) < distanciaMenor) {
+                    distanciaMenor = calculaDistancia(coordenadas[i].x, robotEsqueleto.x, coordenadas[i].y, robotEsqueleto.y);
+                    vilaoEsqueleto.x = coordenadas[i].x ;
+                    vilaoEsqueleto.y = coordenadas[i].y;
+                    
+
+                    if(robotEsqueleto.x >= vilaoEsqueleto.x){
+                        vilao1.crop = 0;
+                        vilao2.crop = 0;
+                    } else{
+                        vilao1.crop = 1; 
+                        vilao2.crop = 1;
+                    }
+                
+                }
+            }
+            
+          // INTERACAO COM O VILAO 
+
+          if (contadorCenario >= 1 && contadorCenario <= 2){
+            if((Math.abs(robotEsqueleto.y - vilaoEsqueleto.y) <100) && (Math.random() < 0.015)){
+               // window.alert("ei");
+                var tiroVilao = new Rectangulo(0, 0, 6, 6);
+                tiroVilao.x = vilaoEsqueleto.x + 30;
+                tiroVilao.y = vilaoEsqueleto.y + 32;
+                if(vilao1.crop == 0 || vilao2.crop == 0){
+                    tiroVilao.deltaX = 5//direcaoTiro segundo o crop do vilao1
+                }
+                if(vilao1.crop == 1 || vilao2.crop == 1){
+                    tiroVilao.deltaX = -5//direcaoTiro segundo o crop do vilao1
+                }
+
+                tirosVilao.push(tiroVilao);
+            }  
+
+            //TIROS DO VILAO 
+            for (var i = 0; i < tirosVilao.length; i++) {
+                tirosVilao[i].desenha(tela);
+
+                if (tirosVilao[i].x > tela.largura || tirosVilao[i].x < 0) {
+                    tirosVilao.splice(i, 1);
+                    i--;
+                    continue;
+                }
+                
+                
+                if (tirosVilao[i].colide(robotEsqueleto)) {
+                    indiceEnergia =  energia.indice + 2;
+                    somRobotAtingido.reproduz(true); 
+                    tirosVilao.splice(i, 1);
+                    //  inimigos[j].visivel = false;
+                    //  inimigos[j].activo = false;
+                    //  tiros[i].visivel = false;
+                    //  tiros[i].activo = false;
+                    // pontos += 10;
+                    // contadorInimigo += 1;
+                }
+                
+            }
+          }
+
+        
+
+        
+
+           
+
+    /*
+    ===============================
+        OUTROS PERSONAGENS  CENARIOS 
+    ===============================
+    */
+    
+   
+        //cenario 2
+        if(contadorCenario == 1){  
+            cao.desenha(tela); //desenhar cao
+            radioPainel.desenha(tela);
+        }
+
+        //cenario 3
+        if(contadorCenario == 2){
+            radioPainel.visivel = false;   
+            stella.desenha(tela);
+            prisao.desenha(tela);
+            chavePainel.desenha(tela);
+        }
+      
+        //cenario 4
+
+
+
+    /*
+    ===============================
+        GAME OVER  
+    ===============================
+    */
+
+    //morte robot
+        if(indiceEnergia == 10){
+            continua = false;
+            somRobotMorto.reproduz(true);
+            window.location.href = "daPunkGameOver.html";
+        }
+        if (tempoEmFalta == 0){
+            continua = false;
+            somRobotMorto.reproduz(true);
+            window.location.href = "daPunkGameOver.html";
+        }
+
+
+        menuAjudaJogo.desenha(tela);
+        botaoFecharAjuda.desenha(tela);
+    
+
+        if (continua) {
+            contador++;
+            window.requestAnimationFrame(desenha);
+        }
+
+        
+}
+
+ /*
+===============================================================================
+        FUNÇÕES   
+===============================================================================
+*/
+    //funçao para silenciar tudo 
+    
+
+    //caclcula a distancia do ponto menor
+    function calculaDistancia(x1, x2, y1, y2) {
+        return Math.hypot(x1 - (x2 - 150 ), y1 - y2);  // -150 é para dar distancia de segurança entre vilao e robot
+    }
+
+    function processaTeclaPremida(tecla) {
+            if (tecla.code == "Space") {        // barra de espaços
+                var tiro = new Rectangulo(0, 0, 6, 6);
+               // tiro.x = robot.x + robot.largura ;
+                tiro.x = robot.x + compensacaoTiro ;
+                tiro.y = robot.y + 32;
+                tiro.deltaX = direcaoTiro;
+                tiros.push(tiro);
+                somDisparo.reproduz(true);
+            //    disparo.reproduz(true);
+            }
+            if (tecla.code == "ArrowLeft") {    // esquerda
+               robot.crop = 1;
+               robotEsqueleto.deltaX = -3;
+                robot.iteracoes = 8;
+                //ajustar x do esqueleto quando vira
+                esqueletoCompensaX = -37;
+               
+                //direcçao e nascimento de tiro
+                direcaoTiro = -5;
+                compensacaoTiro = -10;
+               
+            //    robot2.iteracoes = 8;
+             //   robot2.deltaX = -3;
+             //   robot2.crop = 1;
+                 
+            }
+            if  (tecla.code == "ArrowRight") {
+                robotEsqueleto.deltaX = 3;
+                robot.iteracoes = 8;
+                robot.crop = 0;
+                esqueletoCompensaX = -13;
+                
+                //direcçao e nascimento de tiro
+                direcaoTiro = 5;
+                compensacaoTiro = 70;
+               
+            //    robot2.iteracoes = 8;
+            //    robot2.deltaX = 3;
+            //    robot2.crop = 0;
+                //...
+            }
+            if (tecla.code == "ArrowDown") {    // baixo
+                //...
+            }
+            if (tecla.code == "ArrowUp") {      // cima
+                somSalto.reproduz(true);
+                if(angulo <= 0){
+                    angulo = 180;
+                }
+                
+                
+            }
+            if (tecla.code == "ArrowDown") {    // baixo
+                //...
+            }
+        }
+
+        function processaTeclaLibertada(tecla) {
+            if (tecla.code == "Space") {
+                //...
+            }
+            if ((tecla.code == "ArrowLeft") || (tecla.code == "ArrowRight")) {
+                robotEsqueleto.deltaX = 0;
+                robot.iteracoes = 0;
+                robot.indice = 0;
+
+            //    robot2.deltaX = 0;
+            //    robot2.iteracoes = 0;
+            //    robot2.indice = 2;
+            }
+            if ((tecla.code == "ArrowUp") || (tecla.code == "ArrowDown")) {
+                //...
+            }
+        }
+
+        function playSons(){
+            faseSons[contadorCenario].volume= 0.2;
+            faseSons[contadorCenario].currentTime = 0;
+            faseSons[contadorCenario].play();    
+        }
+
+    
+    
+        function processaBotaoPremido(rato) {
+            ratoX = Math.floor(rato.offsetX * racioX);
+            ratoY = Math.floor(rato.offsetY * racioY);
+            //ecrã final para selecionar resposta
+            if(sim.contemPonto(ratoX, ratoY)){
+                window.location.href = "daPunkGameVitoria.html"; 
+            }
+            if(nao.contemPonto(ratoX, ratoY)){
+                nao.visivel = true;
+                window.location.href = "daPunkGameOver.html";
+            }
+
+            //tocar no botao ajuda do painel
+            if(botaoMenu.contemPonto(ratoX, ratoY)){
+               menuAjudaJogo.visivel = true;
+               menuAjudaJogo.activo = true;
+                botaoFecharAjuda.visivel = true;
+                botaoFecharAjuda.activo = true;
+                continua = false;
+            }
+            
+            if(botaoFecharAjuda.contemPonto(ratoX, ratoY)){           
+             menuAjudaJogo.visivel = false;
+             menuAjudaJogo.activo = false;
+
+             botaoFecharAjuda.visivel = false;
+             botaoFecharAjuda.activo = false;
+            continua = true;
+            desenha();
+            }
+           
+            //tocar no pause
+
+            if(botaoPlay.contemPonto(ratoX, ratoY)){
+             
+             if(continua){
+                continua = false;
+                botaoPlay.indice = 1;
+                for(var i = 0; i < audios.length ; i++){
+                    audios[i].pause();
+                }
+             }else{
+                playSons();
+                botaoPlay.indice = 0;
+                continua = true;
+                desenha();
+             }
+                  
+            }
+
+            //pausar sons
+            if(botaoSom.contemPonto(ratoX, ratoY)){
+                if(botaoSom.indice == 0){
+                    botaoSom.indice = 1;
+                    for(var i = 0; i < audios.length ; i++){
+                    audios[i].muted = true;
+                    }
+                }  
+                else{
+                    botaoSom.indice = 0
+                    for(var i = 0; i < audios.length ; i++){
+                        audios[i].muted = false;
+                    }
+                } 
+            }
+
+
+            //...
+        }
+      
+
+        function processaMovimento(rato) {
+            ratoX = Math.floor(rato.offsetX * racioX);
+            ratoY = Math.floor(rato.offsetY * racioY);
+            
+        }
+
+        function processaBotaoLibertado(rato) {
+            ratoX = Math.floor(rato.offsetX * racioX);
+            ratoY = Math.floor(rato.offsetY * racioY);
+     
+            //...
+        }
+
+        window.onload = function () {
+            inicia();
+            desenha();
+            playSons();
+        
+        }
+        window.onkeydown = processaTeclaPremida;
+        window.onkeyup = processaTeclaLibertada;
+
+</script>
+</head>
+
+<body>
+    <canvas id="tela" width="1150" height="640">O seu <em>browser</em> não suporta o elemento
+        <code>canvas</code>!</canvas>
+    <div id="recursos">
+        
+        <!--cenários-->
+        <img src="./recursos/imagens/cenarioUm.jpg" id="cenario1">
+        <img src="./recursos/imagens/cenarioDois.png" id="cenario2">
+        <img src="./recursos/imagens/cenarioTres.png" id="cenario3">
+        <img src="./recursos/imagens/cenarioQuatro.png" id="cenario4">
+        <img src="./recursos/imagens/cenarioCinco.png" id="cenario5">
+        <img src="./recursos/imagens/cenarioSeis.png" id="cenario6">
+        <img src="./recursos/imagens/menuAjudaJogo.png" id="menuAjudaJogo" >
+
+        <!--plataformas-->
+        <img src="./recursos/imagens/plataformagrande.png" id="plataformaCompleta">
+        <img src="./recursos/imagens/plataforma-semiCompleta.png" id="plataformaTresQuartos">
+        <img src="./recursos/imagens/plataforma-bloco.png" id="plataformaBloco">
+        <img src="./recursos/imagens/plataforma-intermedia.png" id="plataformaIntermedia1">
+        <img src="./recursos/imagens/plataforma-intermedia-2.png" id="plataformaIntermedia2">
+
+       <!--personagens--> 
+        <img src="./recursos/imagens/spriteCompleto.png" id="robotSprite">
+        <img src="./recursos/imagens/sprite_inimigo.png" id="inimigo">
+        <img src="./recursos/imagens/vilaosprite1.png" id="vilao1">
+        <img src="./recursos/imagens/caosprite.png" id="cao">
+        <img src="./recursos/imagens/caofeliz.png" id="caoFeliz">
+        <img src="./recursos/imagens/Sprite_Stella.png" id="stella">
+        <img src="./recursos/imagens/Vilao2.png" id="vilao2">
+        <img src="./recursos/imagens/robto2_sprite.png" id="robot2">
+        <img src="./recursos/imagens/vilao2csemchave.png" id="vilao3">
+        <img src="./recursos/imagens/vilao1semradio.png" id="vilao4">
+
+        <!--elementos-->
+        <img src="./recursos/imagens/botaoAjudaAzul.png" id="botaoMenu">
+        <img src="./recursos/imagens/spritedisco.png" id="discoPainel">
+        <img src="./recursos/imagens/disco.png" id="discoCor">
+        <img src="./recursos/imagens/Pilha.png" id="pilha">
+        <img src="./recursos/imagens/pilhas-sprite.png" id="energia">
+        <img src="./recursos/imagens/SpriteNave.png" id="nave">
+        <img src="./recursos/imagens/prisao.png" id="prisao">
+        <img src="./recursos/imagens/radio_painel.png" id="radioPainel">
+        <img src="./recursos/imagens/chave_painel.png" id="chavePainel">
+        <img src="./recursos/imagens/temporizador.png" id="temporizadorPainel">
+        <img src="./recursos/imagens/boataoPlay.png" id="botaoPlay">
+        <img src="./recursos/imagens/botaoSom.png" id="botaoSom">
+        <img src="./recursos/imagens/botaoMenuAjuda.png" id="botaoMenuAjuda">
+
+        <!--Audios-->
+        <audio src="./recursos/sons/Fase1.mp3" id="fase1">O seu <em>browser</em> não suporta o elemento <code> audio</code>!</audio>
+        <audio src="./recursos/sons/Fase2.mp3" id="fase2">O seu <em>browser</em> não suporta o elemento <code> audio</code>!</audio>
+        <audio src="./recursos/sons/Fase3.mp3" id="fase3">O seu <em>browser</em> não suporta o elemento <code> audio</code>!</audio>
+        <audio src="./recursos/sons/Fase4.mp3" id="fase4">O seu <em>browser</em> não suporta o elemento <code> audio</code>!</audio>
+        <audio src="./recursos/sons/Fase5.mp3" id="fase5">O seu <em>browser</em> não suporta o elemento <code> audio</code>!</audio>
+        
+        <audio src="./recursos/sons/1-harder.mp3" id="harder">O seu <em>browser</em> não suporta o elemento <code> audio</code>!</audio>
+        <audio src="./recursos/sons/2-better.mp3" id="better">O seu <em>browser</em> não suporta o elemento <code> audio</code>!</audio>
+        <audio src="./recursos/sons/3-faster.mp3" id="faster">O seu <em>browser</em> não suporta o elemento <code> audio</code>!</audio>
+        <audio src="./recursos/sons/4-stronger.mp3" id="stronger">O seu <em>browser</em> não suporta o elemento <code> audio</code>!</audio>
+
+        <audio src="./recursos/sons/aberturaPlataforma.wav" id="aberturaPlataforma">O seu <em>browser</em> não suporta o elemento <code> audio</code>!</audio>
+        <audio src="./recursos/sons/pilha.mp3" id="somPilha">O seu <em>browser</em> não suporta o elemento <code> audio</code>!</audio>
+        <audio src="./recursos/sons/salto.wav" id="salto">O seu <em>browser</em> não suporta o elemento <code> audio</code>!</audio>
+        <audio src="./recursos/sons/entradaNave.mp3" id="somNave">O seu <em>browser</em> não suporta o elemento <code> audio</code>!</audio>
+        <audio src="./recursos/sons/laser.mp3" id="disparoRobot">O seu <em>browser</em> não suporta o elemento <code> audio</code>!</audio>
+        <audio src="./recursos/sons/robotAtingido.mp3" id="robotAtingido"></audio>
+        <audio src="./recursos/sons/robotAtingido2.mp3" id="robotMorto"></audio>
+
+    </div>
+</body>
+
+</html>

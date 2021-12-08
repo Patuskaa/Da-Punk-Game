@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Base...</title>
+    <style>
+
+        #recursos {
+            display: none;
+        }
+
+        #tela {
+            display: block;
+            margin: auto;
+            margin-top: 2%;
+        }
+
+    </style>
+    <script src="Ludoteca.js"></script>
+    <script>
+        var tela;
+        var contexto;
+        var continua;
+        var contador;
+        var fundo;
+
+        var racioX;
+        var racioY;
+
+        var ratoX;
+        var ratoY;
+        
+        //imagens
+        var fundoEcraInicio;
+        var robotGrande;
+        var daPunkTitulo;
+        var botaoJogar;
+        var botaoAjuda;
+        var botaoMenu;
+        var menuAjuda;
+
+        //som
+        var fase1;
+
+
+        function inicia() {
+            tela = new Tela(document.getElementById("tela"));
+            contexto = tela.contexto;
+            continua = true;
+            contador = 0;
+            
+            //tela
+            fundoEcraInicio = new Rectangulo(0, 0, 1150, 640, "#051519");
+            //elementos
+            botaoJogar = new Imagem(900, 40, document.getElementById("botaoJogarInicio"));
+            menuAjuda = new Imagem(50, 100, document.getElementById("menuAjuda"));
+            botaoMenu= new Imagem(710, 40, document.getElementById("botaoMenu"));
+            //som
+            fase1 = new Som(document.getElementById("fase1"));
+
+            //...
+            ratoX = 0;
+            ratoY = 0;
+
+            racioX = tela.largura / tela.larguraFinal;
+            racioY = tela.altura / tela.alturaFinal;
+            //...
+            tela.elemento.onmousedown = processaBotaoPremido;
+            tela.elemento.onmouseup = processaBotaoLibertado;
+            tela.elemento.onmousemove = processaMovimento;
+        }
+
+        function desenha() {
+            contexto.clearRect(0, 0, tela.largura, tela.altura);
+            fundoEcraInicio.desenha(tela);
+            
+         
+            botaoJogar.desenha(tela);
+         //   botaoAjuda.desenha(tela);
+            menuAjuda.desenha(tela);
+            botaoMenu.desenha(tela);
+
+        
+            if (continua) {
+                contador++;
+                window.requestAnimationFrame(desenha);
+            }
+        }
+
+        function processaBotaoPremido(rato) {
+            ratoX = Math.floor(rato.offsetX * racioX);
+            ratoY = Math.floor(rato.offsetY * racioY);
+            
+            if (botaoJogar.contemPonto(ratoX, ratoY)) {
+                botaoJogar.seleccionado = true;
+                window.location.href = "daPunkJogo.html";
+            }
+            if (botaoMenu.contemPonto(ratoX, ratoY)) {
+                botaoMenu.seleccionado = true;
+                window.location.href = "index.html";
+            }
+
+            
+        }
+
+        function processaMovimento(rato) {
+            ratoX = Math.floor(rato.offsetX * racioX);
+            ratoY = Math.floor(rato.offsetY * racioY);
+
+            if (botaoJogar.contemPonto(ratoX, ratoY) || botaoMenu.contemPonto(ratoX, ratoY) ) {
+                tela.elemento.style.cursor = "pointer";
+            } 
+            else{
+                tela.elemento.style.cursor = "default";
+            }
+        }
+
+        function processaBotaoLibertado(rato) {
+            ratoX = Math.floor(rato.offsetX * racioX);
+            ratoY = Math.floor(rato.offsetY * racioY);
+            //...
+        }
+
+        function processaTeclaPremida(tecla) {
+            if (tecla.keyCode == 32) {  // barra de espaços
+                //...
+            }
+            if (tecla.keyCode == 37) {  // esquerda
+                //...
+            }
+            if (tecla.keyCode == 38) {  // cima
+                //...
+            }
+            if (tecla.keyCode == 39) {  // direita
+                //...
+            }
+            if (tecla.keyCode == 40) {  // baixo
+                //...
+            }
+        }
+
+        function processaTeclaLibertada(tecla) {
+            if (tecla.keyCode == 32) {
+                //...
+            }
+            if ((tecla.keyCode == 37) || (tecla.keyCode == 39)) {
+                //...
+            }
+            if ((tecla.keyCode == 38) || (tecla.keyCode == 40)) {
+                //...
+            }
+        }
+
+        window.onload = function () {
+            inicia();
+            desenha();
+        }
+        window.onkeydown = processaTeclaPremida;
+        window.onkeyup = processaTeclaLibertada;
+    </script>
+</head>
+
+<body>
+    <canvas id="tela" width="1150" height="640">O seu <em>browser</em> não suporta o elemento
+        <code>canvas</code>!</canvas>
+    <div id="recursos">
+        <!--imagens-->
+        <img src="./recursos/imagens/robotGrande.png" id="robotGrande">
+        <img src="./recursos/imagens/daPunkGameTitulo.png" id="daPunkTitulo">
+        <img src="./recursos/imagens/botaoJogarInicio.png" id="botaoJogarInicio">
+        <img src="./recursos/imagens/botaoJogarAjuda.png" id="botaoJogarAjuda">
+        <img src="./recursos/imagens/botaoMenuVermelho.png" id="botaoMenu">
+        <img src="./recursos/imagens/menuAjuda.png" id="menuAjuda">
+        <!--sons-->
+        <audio src="./recursos/sons/Fase1.mp3" id="fase1">O seu <em>browser</em> não suporta o elemento <code> audio</code>!</audio>
+    </div>
+</body>
+
+</html>

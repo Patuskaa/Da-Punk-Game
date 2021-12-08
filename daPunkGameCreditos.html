@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Base...</title>
+    <style>
+
+        #recursos {
+            display: none;
+        }
+
+        #tela {
+            display: block;
+            margin: auto;
+            margin-top: 2%;
+        }
+
+        .creditos{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+            margin: auto;
+            margin-top: 2%;
+            width: 1150px;
+            height: 640px;
+            background-color: #051519;
+        }
+
+        .botoes{
+            margin-bottom: 40px;
+        }
+        .botoes img{
+            margin:5px;
+            cursor: pointer;
+        }
+
+        .botoes img:hover{
+            opacity: 80%;
+        }
+
+    </style>
+
+</head>
+
+<body>
+   <div class="creditos">
+        <div class="botoes">
+            <img src="./recursos/imagens/botaoMenuVermelho.png" id="botaoMenu" onclick="enviaMenu()">
+            <img src="./recursos/imagens/botaoJogarInicio.png" id="botaoJogarInicio" onclick="enviaJogar()">
+            <img src="./recursos/imagens/botaoJogarAjuda.png" id="botaoJogarAjuda" onclick="enviaAjuda()">  
+        </div>
+       <video controls src="./recursos/video/creditosFinal.mp4" width="800px"></video>
+   </div>
+
+  
+
+   <script>
+       function enviaMenu(){
+           window.location.href = "index.html";
+       }
+       function enviaJogar(){
+           window.location.href = "daPunkJogo.html";
+       }
+       function enviaAjuda(){
+           window.location.href = "daPunkGameAjuda.html";
+       }
+
+
+    </script>
+
+</body>
+
+</html>
